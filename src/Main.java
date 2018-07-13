@@ -209,7 +209,7 @@ public class Main {
             relation = new CSVPrinter(new BufferedWriter(new FileWriter(new File("relationship.csv"))), CSVFormat.DEFAULT);
 
             for(IGRAPHNode igraphNode: igraphNodes){
-                igraph.printRecord(igraphNode.getId(),igraphNode.getName(),igraphNode.getLang(), "Wordnet");
+                igraph.printRecord(igraphNode.getId(),igraphNode.getName(),igraphNode.getLang(), "Wordnet;Word");
             }
 
             for(Synset synset: addedSynsets.keySet()){
