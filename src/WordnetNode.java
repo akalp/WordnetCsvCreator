@@ -3,12 +3,14 @@ public class WordnetNode {
     private String name;
     private String lang;
     private String definition;
+    private String type;
 
-    public WordnetNode(String id, String name, String lang, String definition) {
+    public WordnetNode(String id, String name, String lang, String type, String definition) {
         this.id = id;
         this.name = name;
         this.lang = lang;
         this.definition = definition;
+        this.type = type;
     }
 
     public String getId() {
@@ -25,6 +27,10 @@ public class WordnetNode {
 
     public String getDefinition() {
         return definition;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

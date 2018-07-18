@@ -2,12 +2,14 @@ public class IGRAPHNode {
     private String id;
     private String name;
     private String lang;
+    private String type;
     private static int count;
 
-    public IGRAPHNode(String name, String lang){
+    public IGRAPHNode(String name, String lang, String type){
         this.id = "i" + count;
         this.name = name;
         this.lang = lang;
+        this.type = type;
         count++;
     }
 
@@ -21,6 +23,10 @@ public class IGRAPHNode {
 
     public String getLang() {
         return lang;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

@@ -10,13 +10,20 @@ import net.sf.extjwnl.dictionary.Dictionary;
 public class test {
     public static void main(String[] args) throws JWNLException {
         Dictionary dictionary = Dictionary.getDefaultResourceInstance();
-        Synset s = dictionary.getIndexWord(POS.ADJECTIVE, "good").getSenses().get(0);
-        System.out.println("offset: "+s.getOffset());
-        System.out.println("index: "+s.getIndex());
-        System.out.println("key: "+s.getKey());
-        System.out.println("type: "+s.getType()+"\ttypename: "+s.getType().getName());
-        System.out.println("posid: "+s.getPOS().getId()+"\tposkey: "+s.getPOS().getKey());
-
-        System.out.println(dictionary.getSynsetAt(POS.getPOSForKey("a"), 1123148));
+        Synset s = dictionary.getIndexWord(POS.NOUN, "accelerator").getSenses().get(0);
+        System.out.println("Meronyms");
+        PointerUtils.getMeronyms(s).print();
+        System.out.println("\nPart Meronyms");
+        PointerUtils.getPartMeronyms(s).print();
+        System.out.println("\nMember Meronyms");
+        PointerUtils.getMemberMeronyms(s).print();
+        System.out.println("\nInherited Meronyms");
+        PointerUtils.getInheritedMeronyms(s).print();
+        System.out.println("\nInherited Part Meronyms");
+        PointerUtils.getInheritedPartMeronyms(s).print();
+        System.out.println("\nInherited Member Meronyms");
+        PointerUtils.getInheritedMemberMeronyms(s).print();
+        System.out.println("\nHolonyms");
+        PointerUtils.getHolonyms(s);
     }
 }
