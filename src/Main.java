@@ -35,7 +35,7 @@ public class Main {
         System.out.println("Reading igraph csv");
         readIGRAPHcsv();
         System.out.println("Creating hyp, lemma, antonym, meronym, holonym");
-        while (createHyp() || createLemmas() || createAntonyms() || createMeronyms() || createHolonyms()){
+        while (createHyp() || createLemmas() || createAntonyms() || createMeronyms() || createHolonyms()) {
             System.out.println("added new things");
         }
         System.out.println("Creating csv files");
@@ -43,25 +43,24 @@ public class Main {
 
     }
 
-    private static void readIGRAPHcsv(){
+    private static void readIGRAPHcsv() {
         CSVParser csvParser = null;
-        try{
+        try {
             csvParser = new CSVParser(new BufferedReader(new FileReader(new File("igraph.csv"))), CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .withIgnoreHeaderCase()
                     .withTrim()
             );
 
-            for(CSVRecord csvRecord: csvParser.getRecords()){
+            for (CSVRecord csvRecord : csvParser.getRecords()) {
                 IGRAPHNode igraphNode = new IGRAPHNode(csvRecord.get("word"), csvRecord.get("lang"), "Word");
                 igraphNodes.add(igraphNode);
                 createSynsets(igraphNode.getId(), csvRecord.get("synsets"));
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.err.println("IOException in createNodesFromIGRAPH");
-        }
-        finally {
-            if(csvParser != null) {
+        } finally {
+            if (csvParser != null) {
                 try {
                     csvParser.close();
                 } catch (IOException e) {
@@ -70,22 +69,22 @@ public class Main {
             }
         }
     }
-    
-    private static String getSynsetID(Synset synset){
-        return synset.getOffset()+"-"+synset.getPOS().getKey();
+
+    private static String getSynsetID(Synset synset) {
+        return synset.getOffset() + "-" + synset.getPOS().getKey();
     }
 
     private static void createSynsets(String fromID, String synsets) {
-        if(!synsets.equals("None")){
+        if (!synsets.equals("None")) {
             String[] synsetIDs = synsets.split(" ");
-            for(String synsetId: synsetIDs){
+            for (String synsetId : synsetIDs) {
                 Synset synset = getSynset(synsetId);
-                if(synset != null){
+                if (synset != null) {
                     WordnetNode wordnetNode;
-                    if(!addedSynsets.keySet().contains(synset)) {
+                    if (!addedSynsets.keySet().contains(synset)) {
                         wordnetNode = new WordnetNode(getSynsetID(synset), getName(synset), "eng", getTypeFromSynset(synset), synset.getGloss());
                         addedSynsets.put(synset, wordnetNode);
-                    }else{
+                    } else {
                         wordnetNode = addedSynsets.get(synset);
                     }
                     relationships.add(new Relationship(fromID, wordnetNode.getId(), "Synset"));
@@ -94,18 +93,18 @@ public class Main {
         }
     }
 
-    private static boolean createLemmas(){
+    private static boolean createLemmas() {
         boolean addednew = false;
-        for(Synset s: addedSynsets.keySet()){
-            for(Word w: s.getWords()){
+        for (Synset s : addedSynsets.keySet()) {
+            for (Word w : s.getWords()) {
                 Synset s1 = w.getSynset();
-                if(s1 != s){
+                if (s1 != s) {
                     WordnetNode wordnetNode;
-                    if(!addedSynsets.keySet().contains(s1)){
+                    if (!addedSynsets.keySet().contains(s1)) {
                         wordnetNode = new WordnetNode(getSynsetID(s1), getName(s1), "eng", getTypeFromSynset(s1), s1.getGloss());
                         addedSynsets.put(s1, wordnetNode);
                         addednew = true;
-                    }else{
+                    } else {
                         wordnetNode = addedSynsets.get(s1);
                     }
                     relationships.add(new Relationship(addedSynsets.get(s).getId(), wordnetNode.getId(), "Lemma"));
@@ -115,19 +114,19 @@ public class Main {
         return addednew;
     }
 
-    private static boolean createAntonyms(){
+    private static boolean createAntonyms() {
         boolean addednew = false;
-        for(Synset s: addedSynsets.keySet()){
+        for (Synset s : addedSynsets.keySet()) {
             try {
                 PointerTargetNodeList antonyms = PointerUtils.getAntonyms(s);
-                for(PointerTargetNode ptn: antonyms){
+                for (PointerTargetNode ptn : antonyms) {
                     Synset s1 = ptn.getSynset();
                     WordnetNode wordnetNode;
-                    if(!addedSynsets.keySet().contains(s1)){
+                    if (!addedSynsets.keySet().contains(s1)) {
                         wordnetNode = new WordnetNode(getSynsetID(s1), getName(s1), "eng", getTypeFromSynset(s1), s1.getGloss());
                         addedSynsets.put(s1, wordnetNode);
                         addednew = true;
-                    }else{
+                    } else {
                         wordnetNode = addedSynsets.get(s1);
                     }
                     relationships.add(new Relationship(addedSynsets.get(s).getId(), wordnetNode.getId(), "Antonym"));
@@ -139,19 +138,19 @@ public class Main {
         return addednew;
     }
 
-    private static boolean createMeronyms(){
+    private static boolean createMeronyms() {
         boolean addednew = false;
-        for(Synset s: addedSynsets.keySet()){
+        for (Synset s : addedSynsets.keySet()) {
             try {
                 PointerTargetNodeList meronyms = PointerUtils.getMeronyms(s);
-                for(PointerTargetNode ptn: meronyms){
+                for (PointerTargetNode ptn : meronyms) {
                     Synset s1 = ptn.getSynset();
                     WordnetNode wordnetNode;
-                    if(!addedSynsets.keySet().contains(s1)){
+                    if (!addedSynsets.keySet().contains(s1)) {
                         wordnetNode = new WordnetNode(getSynsetID(s1), getName(s1), "eng", getTypeFromSynset(s1), s1.getGloss());
                         addedSynsets.put(s1, wordnetNode);
                         addednew = true;
-                    }else{
+                    } else {
                         wordnetNode = addedSynsets.get(s1);
                     }
                     relationships.add(new Relationship(addedSynsets.get(s).getId(), wordnetNode.getId(), "Meronym"));
@@ -163,19 +162,19 @@ public class Main {
         return addednew;
     }
 
-    private static boolean createHolonyms(){
+    private static boolean createHolonyms() {
         boolean addednew = false;
-        for(Synset s: addedSynsets.keySet()){
+        for (Synset s : addedSynsets.keySet()) {
             try {
                 PointerTargetNodeList holonyms = PointerUtils.getHolonyms(s);
-                for(PointerTargetNode ptn: holonyms){
+                for (PointerTargetNode ptn : holonyms) {
                     Synset s1 = ptn.getSynset();
                     WordnetNode wordnetNode;
-                    if(!addedSynsets.keySet().contains(s1)){
+                    if (!addedSynsets.keySet().contains(s1)) {
                         wordnetNode = new WordnetNode(getSynsetID(s1), getName(s1), "eng", getTypeFromSynset(s1), s1.getGloss());
                         addedSynsets.put(s1, wordnetNode);
                         addednew = true;
-                    }else{
+                    } else {
                         wordnetNode = addedSynsets.get(s1);
                     }
                     relationships.add(new Relationship(addedSynsets.get(s).getId(), wordnetNode.getId(), "Holonym"));
@@ -199,9 +198,9 @@ public class Main {
         return synset.getWords().get(0).getLemma();
     }
 
-    private static String getTypeFromSynset(Synset synset){
+    private static String getTypeFromSynset(Synset synset) {
         String type = synset.getPOS().getLabel();
-        return type.substring(0,1).toUpperCase()+type.substring(1);
+        return type.substring(0, 1).toUpperCase() + type.substring(1);
     }
 
     private static Synset getSynset(String id) {
@@ -212,7 +211,7 @@ public class Main {
         }
     }
 
-    private static boolean createHyp(){
+    private static boolean createHyp() {
         Boolean addednew1 = false, addednew2 = false;
         for (Synset synset : addedSynsets.keySet()) {
             try {
@@ -225,12 +224,12 @@ public class Main {
         return (addednew1 || addednew2);
     }
 
-    private static boolean hypHelper(PointerTargetTreeNode root, String rootID, String relation, Boolean addednew){
+    private static boolean hypHelper(PointerTargetTreeNode root, String rootID, String relation, Boolean addednew) {
         PointerTargetTreeNodeList pointerTargetTreeNodes = root.getChildTreeList();
-        if(pointerTargetTreeNodes != null){
-            for(PointerTargetTreeNode pointerTargetTreeNode: pointerTargetTreeNodes){
+        if (pointerTargetTreeNodes != null) {
+            for (PointerTargetTreeNode pointerTargetTreeNode : pointerTargetTreeNodes) {
                 WordnetNode wordnetNode;
-                if(!addedSynsets.keySet().contains(pointerTargetTreeNode.getSynset())) {
+                if (!addedSynsets.keySet().contains(pointerTargetTreeNode.getSynset())) {
                     wordnetNode = new WordnetNode(getSynsetID(pointerTargetTreeNode.getSynset()),
                             getName(pointerTargetTreeNode.getSynset()),
                             "eng",
@@ -238,14 +237,14 @@ public class Main {
                             pointerTargetTreeNode.getSynset().getGloss());
                     addedSynsets.put(pointerTargetTreeNode.getSynset(), wordnetNode);
                     addednew = true;
-                }else{
+                } else {
                     wordnetNode = addedSynsets.get(pointerTargetTreeNode.getSynset());
                 }
 
-                if(relation.equals("Hyponym")) {
+                if (relation.equals("Hyponym")) {
                     relationships.add(new Relationship(rootID, wordnetNode.getId(), relation));
                     relationships.add(new Relationship(wordnetNode.getId(), rootID, "Hypernym"));
-                }else {
+                } else {
                     relationships.add(new Relationship(rootID, wordnetNode.getId(), relation));
                 }
                 hypHelper(pointerTargetTreeNode, addedSynsets.get(pointerTargetTreeNode.getSynset()).getId(), relation, addednew);
@@ -254,7 +253,7 @@ public class Main {
         return addednew;
     }
 
-    private static void createCSV(){
+    private static void createCSV() {
         CSVPrinter igraph = null;
         CSVPrinter wordnet = null;
         CSVPrinter definition = null;
@@ -266,23 +265,23 @@ public class Main {
             definition = new CSVPrinter(new BufferedWriter(new FileWriter(new File("definition.csv"))), CSVFormat.DEFAULT);
             relation = new CSVPrinter(new BufferedWriter(new FileWriter(new File("relationship.csv"))), CSVFormat.DEFAULT);
 
-            for(IGRAPHNode igraphNode: igraphNodes){
-                igraph.printRecord(igraphNode.getId(),igraphNode.getName(),igraphNode.getLang(), igraphNode.getType(), "Wordnet;Word");
+            for (IGRAPHNode igraphNode : igraphNodes) {
+                igraph.printRecord(igraphNode.getId(), igraphNode.getName(), igraphNode.getLang(), igraphNode.getType(), "Wordnet;Word");
             }
 
-            for(Synset synset: addedSynsets.keySet()){
+            for (Synset synset : addedSynsets.keySet()) {
                 WordnetNode wordnetNode = addedSynsets.get(synset);
 
-                wordnet.printRecord(wordnetNode.getId(), wordnetNode.getName(), wordnetNode.getLang(), wordnetNode.getType(), "Wordnet;"+getTypeFromSynset(synset));
+                wordnet.printRecord(wordnetNode.getId(), wordnetNode.getName(), wordnetNode.getLang(), wordnetNode.getType(), "Wordnet;" + getTypeFromSynset(synset));
                 definition.printRecord(wordnetNode.getId(), wordnetNode.getDefinition());
             }
 
-            for(Relationship relationship: relationships){
+            for (Relationship relationship : relationships) {
                 relation.printRecord(relationship.getFrom(), relationship.getTo(), relationship.getType());
             }
 
 
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -291,7 +290,7 @@ public class Main {
             if (wordnet != null) wordnet.close();
             if (definition != null) definition.close();
             if (relation != null) relation.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
